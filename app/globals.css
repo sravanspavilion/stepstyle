@@ -1,26 +1,226 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   STEPSTYLE design tokens
+   Mirrors the Material-3 style token set from the Stitch export. Tailwind v4
+   reads every custom property inside `@theme`, so `bg-surface`,
+   `text-headline-lg`, `px-margin`, `rounded-xl` … all resolve from here.
+--------------------------------------------------------------------------- */
+@theme {
+  /* --- brand palette --- */
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1c1b1b;
+  --color-inverse-surface: #2f3131;
+  --color-on-surface: #1a1c1c;
+  --color-tertiary: #000000;
+  --color-on-tertiary-fixed-variant: #003ea8;
+  --color-surface-dim: #dadada;
+  --color-tertiary-container: #00174b;
+  --color-primary-fixed: #e5e2e1;
+  --color-inverse-primary: #c8c6c5;
+  --color-error-container: #ffdad6;
+  --color-surface-container: #eeeeee;
+  --color-surface: #f9f9f9;
+  --color-background: #f9f9f9;
+  --color-on-secondary-fixed: #151c27;
+  --color-outline: #747878;
+  --color-surface-bright: #f9f9f9;
+  --color-on-primary-fixed: #1c1b1b;
+  --color-on-secondary: #ffffff;
+  --color-secondary: #585f6c;
+  --color-secondary-fixed: #dce2f3;
+  --color-on-tertiary-fixed: #00174b;
+  --color-error: #ba1a1a;
+  --color-surface-variant: #e2e2e2;
+  --color-on-primary-container: #858383;
+  --color-on-background: #1a1c1c;
+  --color-primary: #000000;
+  --color-surface-container-low: #f3f3f3;
+  --color-on-error: #ffffff;
+  --color-surface-tint: #5f5e5e;
+  --color-on-error-container: #93000a;
+  --color-surface-container-lowest: #ffffff;
+  --color-tertiary-fixed-dim: #b4c5ff;
+  --color-secondary-fixed-dim: #c0c7d6;
+  --color-surface-container-highest: #e2e2e2;
+  --color-on-primary-fixed-variant: #474646;
+  --color-on-tertiary: #ffffff;
+  --color-on-secondary-container: #5e6572;
+  --color-on-tertiary-container: #497cff;
+  --color-on-surface-variant: #444748;
+  --color-surface-container-high: #e8e8e8;
+  --color-primary-fixed-dim: #c8c6c5;
+  --color-outline-variant: #c4c7c7;
+  --color-secondary-container: #dce2f3;
+  --color-inverse-on-surface: #f1f1f1;
+  --color-tertiary-fixed: #dbe1ff;
+
+  /* --- radii --- */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* --- spacing rhythm --- */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-gutter-mobile: 1rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-margin-mobile: 1.25rem;
+  --spacing-margin: 3rem;
+
+  /* --- type families --- */
+  --font-body-lg: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body-md: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body-sm: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-label-sm: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-label-md: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-label-lg: var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display-mobile: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-headline-sm: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-headline-md: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-headline-lg: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-headline-lg-mobile: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+
+  /* --- type ramp (size + line-height + tracking + weight) --- */
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--letter-spacing: -0.01em;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 15px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--letter-spacing: 0em;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--letter-spacing: 0.005em;
+  --text-body-sm--font-weight: 400;
+
+  --text-display: 64px;
+  --text-display--line-height: 72px;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 600;
+
+  --text-display-mobile: 40px;
+  --text-display-mobile--line-height: 48px;
+  --text-display-mobile--letter-spacing: -0.02em;
+  --text-display-mobile--font-weight: 600;
+
+  --text-headline-lg: 48px;
+  --text-headline-lg--line-height: 56px;
+  --text-headline-lg--letter-spacing: -0.025em;
+  --text-headline-lg--font-weight: 500;
+
+  --text-headline-lg-mobile: 32px;
+  --text-headline-lg-mobile--line-height: 40px;
+  --text-headline-lg-mobile--letter-spacing: -0.02em;
+  --text-headline-lg-mobile--font-weight: 500;
+
+  --text-headline-md: 28px;
+  --text-headline-md--line-height: 36px;
+  --text-headline-md--letter-spacing: -0.02em;
+  --text-headline-md--font-weight: 500;
+
+  --text-headline-sm: 22px;
+  --text-headline-sm--line-height: 28px;
+  --text-headline-sm--letter-spacing: -0.015em;
+  --text-headline-sm--font-weight: 500;
+
+  --text-label-lg: 14px;
+  --text-label-lg--line-height: 20px;
+  --text-label-lg--letter-spacing: 0.02em;
+  --text-label-lg--font-weight: 600;
+
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.04em;
+  --text-label-md--font-weight: 600;
+
+  --text-label-sm: 10px;
+  --text-label-sm--line-height: 14px;
+  --text-label-sm--letter-spacing: 0.06em;
+  --text-label-sm--font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout offsets
+   The sticky header is `announcement (2.25rem) + nav (5rem)` tall. Exposing
+   the height as a custom property keeps `main`'s top padding, the hero's
+   negative offset and the catalog toolbar's `sticky top` in sync even after
+   the shopper dismisses the announcement strip.
+--------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --header-h: 7.25rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html[data-announcement="hidden"] {
+  --header-h: 5rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior: none;
+}
+
+/* --- Material Symbols Outlined (variable axes: FILL / wght / opsz / GRAD) --- */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "liga";
+  user-select: none;
+}
+
+/* Horizontal chip rails keep the scrollbar out of the layout */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Endless service ticker. The list renders its items twice so the -50% shift
+   lands exactly on the seam; reduced-motion simply parks the rail. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee 36s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
