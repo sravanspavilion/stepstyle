@@ -127,7 +127,21 @@ export function SiteHeader() {
             <Icon name={menuOpen ? "close" : "menu"} />
           </button>
 
-          <Link href="/" aria-label="STEPSTYLE home" className="flex shrink-0 items-center">
+          {/* `h-20` matches the nav row so the whole column is tappable, not
+              just the ~18px-tall wordmark the Logo component renders. */}
+          <Link
+            href="/"
+            aria-label="STEPSTYLE home"
+            onClick={() => {
+              // Next.js only resets scroll when the route actually changes, so a
+              // same-route click (already on /) would leave the shopper stranded
+              // mid-page. Cross-route clicks are left to Next.js.
+              if (pathname !== "/") return;
+              const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+              window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+            }}
+            className="flex h-20 shrink-0 items-center transition-opacity hover:opacity-60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
             <Logo width={112} priority />
           </Link>
 

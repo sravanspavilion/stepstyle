@@ -1198,6 +1198,17 @@ export const promo = {
   deliveryFee: 149,
 };
 
+/**
+ * Store WhatsApp — the whole checkout hands off here, so the number is the
+ * single point of failure for taking an order. `wa.me` only accepts E.164
+ * digits: no `+`, spaces or dashes, and the country code is mandatory (a bare
+ * 10-digit number will not resolve).
+ */
+export const whatsapp = {
+  phone: "918547287811",
+  display: "+91 85472 87811",
+};
+
 export const navItems = [
   { label: "Men", href: "/shoes" },
   { label: "Women", href: "/shoes" },

@@ -150,9 +150,9 @@
 /* ---------------------------------------------------------------------------
    Layout offsets
    The sticky header is `announcement (2.25rem) + nav (5rem)` tall. Exposing
-   the height as a custom property keeps `main`'s top padding, the hero's
-   negative offset and the catalog toolbar's `sticky top` in sync even after
-   the shopper dismisses the announcement strip.
+   the height as a custom property keeps `main`'s top padding, the catalog
+   toolbar's `sticky top` and the buy panel's `lg:top` in sync even after the
+   shopper dismisses the announcement strip.
 --------------------------------------------------------------------------- */
 :root {
   --header-h: 7.25rem;

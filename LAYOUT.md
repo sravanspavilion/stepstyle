@@ -69,8 +69,8 @@ as a CSS custom property so every dependent offset stays in sync automatically:
 html[data-announcement="hidden"]   { --header-h: 5rem;   }
 ```
 
-Consumed by `main`'s top padding, the hero's negative margin, the catalog
-toolbar's `sticky top-[var(--header-h)]`, and the buy panel's `lg:top`.
+Consumed by `main`'s top padding, the catalog toolbar's
+`sticky top-[var(--header-h)]`, and the buy panel's `lg:top`.
 
 ---
 
@@ -180,7 +180,7 @@ className="mx-auto max-w-[1600px] px-gutter-mobile md:px-margin"
 A flat server component; all seven sections are independent.
 
 ```
-<Hero />              full-bleed, -mt to slide under the fixed header
+<Hero />              aspect-512/286 image, never cropped
 <CategoryGrid />      md:grid-cols-12
 <FeaturedTabs />      grid-cols-2 md:grid-cols-3
 <UniformSpotlight />  2-col split, aspect-4/5 image
@@ -240,6 +240,40 @@ Totals are computed in the store, not the page: subtotal → product savings →
 `promoDiscount` (flat 10% of subtotal) → delivery (free) → total. The seeded
 cart resolves to ₹4,698 / −₹1,700 / −₹470 / **₹4,228**, matching the mockup.
 
+#### Checkout is a WhatsApp handoff
+
+There is no address form and no payment gateway. "Place order" is a real anchor
+(`target="_blank"`) pointing at `whatsapp.phone` from `lib/catalog.ts`:
+
+```
+https://wa.me/918547287811?text=<encodeURIComponent(message)>
+```
+
+`whatsapp.phone` must be **E.164 digits only** — no `+`, spaces or dashes, and
+the country code is mandatory. A bare 10-digit number will not resolve, and a
+wrong one silently sends orders to a stranger. `whatsapp.display` is the
+human-readable form; nothing renders it yet.
+
+`message` is built in `OrderSummary` from store state: numbered lines with size,
+colorway, qty and line total, then a ledger mirroring the on-screen one
+(subtotal, product savings, promo, delivery, total) and `Paying via: <pill>`.
+WhatsApp renders `*text*` as bold, so no HTML is needed. The seeded cart
+produces the same figures listed above.
+
+Two deliberate choices:
+
+- **An anchor, not a `window.open` button** — stays keyboard-operable, shows its
+  target on hover, and is middle-clickable. `target="_blank"` is what WhatsApp's
+  docs specify; `wa.me` opens the app on mobile and web on desktop.
+- **The bag is never cleared.** If the shopper closes WhatsApp without sending,
+  their cart survives.
+
+**Empty-bag guard:** `OrderSummary` renders even when `lines.length === 0`, so the
+link is disabled in that state (`href={undefined}` + `aria-disabled` +
+`pointer-events-none opacity-50`). Without it the button would fire off a ₹0,
+zero-item order.
+
+
 ---
 
 ## Shared UI kit — `components/ui/`
@@ -248,6 +282,7 @@ cart resolves to ₹4,698 / −₹1,700 / −₹470 / **₹4,228**, matching the
 |---|---|
 | `Icon` | Material Symbols wrapper. `fill` prop drives the FILL axis |
 | `StarRow` | Renders `product.rating` as filled/outlined stars |
+| `Logo` | Crops the wordmark out of its padded square canvas — see the gotcha below |
 | `primitives.tsx` | `BadgeChip`, `ColorDots`, `PriceRow`, `SectionHeading`; re-exports `Link`, `WishlistToggle` |
 | `ProductCard` | Server-safe card: `aspect-4/5` image + `ProductCardActions` |
 | `ProductCardActions` | Client. Takes **only** `slug`/`name`/`inStock` |
@@ -318,15 +353,41 @@ more units than the warehouse will release.
   `Type '"..."' does not satisfy the constraint`. `searchParams` and `params` on
   these helpers are `Promise`s and must be awaited.
 - **Material Symbols name `360` does not exist** — use `rotate_right`.
+- **Material Symbols ships no brand logos.** `instagram`, `youtube_play` and
+  `pinterest` have no ligature, so `Icon` falls back to a Latin font and renders
+  the *spelled-out word* — 168–288px wide inside a 40px circle, overlapping
+  neighbouring text. The footer social row was removed for this reason; use
+  inline SVG brand marks if it ever comes back.
+- **Grid and flex children default to `min-width: auto`** and will not shrink
+  below their content's min-content width. One wide descendant therefore pushes
+  the whole page sideways. Fix with `min-w-0` on the child, or `minmax(0,1fr)`
+  on the track. This bit the Uniform Capsule section (+49px) and the PDP
+  (+50px) at 390px.
 - `@next/next/no-page-custom-font` is disabled in `eslint.config.mjs`; the App
   Router has no `_document.js` to hang custom font links on.
 
 ---
 
+> **Gotcha — the logo is a wordmark inside a square.** `LOGO_SRC` is a 512x512
+> canvas that is ~97% empty: the actual wordmark occupies only `x 4..399,
+> y 224..289` — 395x65, roughly 6.08:1, and left-aligned rather than centred.
+> Rendering the square with `h-6 w-auto` is valid `next/image` usage and looks
+> fine in the HTML, but it scales the letterforms to ~13% of the box: at header
+> size the brand mark is a **3px-tall smudge**. `components/ui/logo.tsx` crops to
+> the measured ink box with an `overflow-hidden` wrapper; `LOGO_CANVAS` /
+> `LOGO_INK` in `lib/catalog.ts` hold the geometry. Re-measure with a canvas
+> pixel scan if the asset is ever replaced.
+>
+> The crop uses pixel maths rather than percentages because a global
+> `img { max-width: 100% }` reset clamps a percentage-width image back to its
+> containing block, silently defeating the crop.
+
 ## Known gaps
 
-- **No visual verification has been done.** The desktop browser was not
-  connected during the port, so all checks were `curl` + HTML extraction +
-  compiled-CSS inspection. Responsive breakpoints, the sticky toolbar offset and
-  drawer behaviour are structurally sound but have not been seen rendered.
+- **Verified in a real browser** (headless Chrome via CDP), not just by `curl`:
+  all four routes hydrate with **0 uncaught errors**, the cart/wishlist/promo
+  store round-trips through `localStorage`, the size gate blocks an add until a
+  size is chosen, header badges update, and `?dept=Men` narrows 11 products to 9
+  server-side. Responsive breakpoints and the sticky/drawer offsets are still
+  only verified at the default headless viewport, not across real device sizes.
 - The `README.md` is still the `create-next-app` boilerplate.

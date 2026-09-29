@@ -1,5 +1,4 @@
 import { Icon, StarRow } from "@/components/ui/icon";
-import { Link } from "@/components/ui/primitives";
 import { editorialReviews } from "@/lib/catalog";
 
 export function Reviews() {
@@ -42,16 +41,6 @@ export function Reviews() {
             </li>
           ))}
         </ul>
-
-        <div className="mt-space-lg flex justify-center">
-          <Link
-            href="/shoes?tab=featured"
-            className="inline-flex items-center gap-2 font-label-lg text-label-lg uppercase tracking-wider text-primary underline-offset-4 hover:underline"
-          >
-            Read all reviews
-            <Icon name="arrow_forward" className="text-[18px]" />
-          </Link>
-        </div>
       </div>
     </section>
   );

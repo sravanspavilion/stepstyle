@@ -19,7 +19,10 @@ export function UniformSpotlight() {
 
   return (
     <section className="mx-auto max-w-[1600px] px-gutter-mobile py-space-xl md:px-margin">
-      <div className="grid gap-space-xl lg:grid-cols-2 lg:items-center">
+      {/* `minmax(0,…)` on the track and `min-w-0` on the column: a grid child
+          defaults to `min-width: auto`, so the bundle list's min-content width
+          would otherwise push the whole page sideways on mobile. */}
+      <div className="grid gap-space-xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
         <div className="relative overflow-hidden rounded-lg bg-surface-container">
           <div className="relative aspect-4/5 w-full sm:aspect-square lg:aspect-4/5">
             {hero && (
@@ -40,7 +43,7 @@ export function UniformSpotlight() {
           </div>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <span className="font-label-sm text-label-sm font-bold uppercase tracking-widest text-secondary">
             {uniformBundle.eyebrow}
           </span>

@@ -4,13 +4,6 @@ import { Icon, StarRow } from "@/components/ui/icon";
 import { Logo } from "@/components/ui/logo";
 import { footerColumns, trustFeatures } from "@/lib/catalog";
 
-const socials = [
-  { name: "instagram", label: "Instagram" },
-  { name: "youtube_play", label: "YouTube" },
-  { name: "pinterest", label: "Pinterest" },
-  { name: "forum", label: "Community" },
-];
-
 const paymentPills = [
   "UPI",
   "Visa",
@@ -49,7 +42,13 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-[1600px] gap-space-xl px-gutter-mobile py-space-xl md:px-margin lg:grid-cols-12">
         {/* brand + newsletter */}
         <div className="lg:col-span-4">
-          <Logo width={140} />
+          <Link
+            href="/"
+            aria-label="STEPSTYLE home"
+            className="block w-fit transition-opacity hover:opacity-60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4"
+          >
+            <Logo width={140} />
+          </Link>
           <p className="mt-space-md max-w-sm font-body-md text-body-md text-on-surface-variant">
             Engineered everyday footwear &amp; apparel. Italian craft, direct from the atelier to
             your door — no markup layers in between.
@@ -133,19 +132,6 @@ export function SiteFooter() {
             </li>
           </ul>
 
-          <ul className="mt-space-lg flex items-center gap-2">
-            {socials.map((social) => (
-              <li key={social.name}>
-                <a
-                  href="#"
-                  aria-label={social.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant text-primary transition-colors hover:border-primary hover:bg-primary hover:text-on-primary"
-                >
-                  <Icon name={social.name} className="text-[18px]" />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 

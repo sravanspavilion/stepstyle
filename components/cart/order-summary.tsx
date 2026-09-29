@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Icon } from "@/components/ui/icon";
 import { Link } from "@/components/ui/primitives";
-import { promo as PROMO } from "@/lib/catalog";
+import { promo as PROMO, whatsapp } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { useStore } from "@/lib/store";
 
@@ -33,11 +33,60 @@ export function OrderSummary() {
     applyPromo,
     removePromo,
     itemCount,
-    notify,
+    lines,
+    resolved,
   } = useStore();
 
   const [code, setCode] = useState("");
   const [payWith, setPayWith] = useState("upi");
+
+  const payWithLabel = payPills.find((p) => p.id === payWith)?.label ?? payWith;
+  // An empty bag still renders this panel, so the handoff has to be guarded —
+  // otherwise it would open WhatsApp with a ₹0, zero-item order.
+  const isEmpty = lines.length === 0;
+
+  /**
+   * The prefilled WhatsApp body. WhatsApp renders `*text*` as bold, so the
+   * headings and total stay emphasised without HTML.
+   */
+  const message = useMemo(() => {
+    const items = resolved.map((line, i) =>
+      [
+        `*${i + 1}. ${line.name}*`,
+        `${line.size} · ${line.colorway}`,
+        `Qty ${line.qty} × ${formatPrice(line.unitPrice)} = ${formatPrice(line.lineTotal)}`,
+      ].join("\n"),
+    );
+
+    const ledger = [
+      `Subtotal (${itemCount} ${itemCount === 1 ? "item" : "items"}): ${formatPrice(subtotal)}`,
+      productSavings > 0 ? `Product savings: −${formatPrice(productSavings)}` : null,
+      promo ? `Promo ${promo.code}: −${formatPrice(promoDiscount)}` : null,
+      `Delivery: ${deliveryFee === 0 ? "FREE" : formatPrice(deliveryFee)}`,
+      `*Total: ${formatPrice(total)}*`,
+      `Paying via: ${payWithLabel}`,
+    ].filter(Boolean);
+
+    return [
+      "*STEPSTYLE — New Order*",
+      "",
+      ...items.map((row) => `${row}\n`),
+      "———————",
+      ...ledger,
+      "",
+      "Please confirm this order. Thank you!",
+    ].join("\n");
+  }, [
+    resolved,
+    itemCount,
+    subtotal,
+    productSavings,
+    promo,
+    promoDiscount,
+    deliveryFee,
+    total,
+    payWithLabel,
+  ]);
 
   return (
     <div className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)]">
@@ -182,13 +231,24 @@ export function OrderSummary() {
           </ul>
         </fieldset>
 
-        <button
-          type="button"
-          onClick={() => notify("This is a demo store — checkout is not wired up yet")}
-          className="mt-space-md h-13 w-full rounded-full bg-primary font-label-lg text-label-lg uppercase tracking-wider text-on-primary transition-transform hover:scale-[1.01]"
+        {/* Checkout is the handoff itself — a real anchor so it stays
+            keyboard-operable, shows its target on hover and is middle-clickable.
+            `wa.me` opens the app on mobile and web.whatsapp.com on desktop. */}
+        <a
+          href={
+            isEmpty
+              ? undefined
+              : `https://wa.me/${whatsapp.phone}?text=${encodeURIComponent(message)}`
+          }
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-disabled={isEmpty || undefined}
+          className={`mt-space-md flex h-13 w-full items-center justify-center rounded-full bg-primary font-label-lg text-label-lg uppercase tracking-wider text-on-primary transition-transform hover:scale-[1.01] ${
+            isEmpty ? "pointer-events-none opacity-50" : ""
+          }`}
         >
           Place order · {formatPrice(total)}
-        </button>
+        </a>
 
         <ul className="mt-space-md grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
           {assurances.map((row) => (

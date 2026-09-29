@@ -107,9 +107,16 @@ export default async function ProductPage({ params }: PageProps<"/shoes/[slug]">
         </nav>
       </div>
 
+      {/* `min-w-0` on both columns: below `lg` this is a single-column implicit
+          grid, and a grid child defaults to `min-width: auto`, so the gallery's
+          min-content width would otherwise push the page sideways on mobile. */}
       <div className="mx-auto grid max-w-[1600px] gap-space-xl px-gutter-mobile py-space-lg md:px-margin lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-        <Gallery product={product} />
-        <BuyPanel product={product} />
+        <div className="min-w-0">
+          <Gallery product={product} />
+        </div>
+        <div className="min-w-0">
+          <BuyPanel product={product} />
+        </div>
       </div>
 
       <DetailTabs product={product} />
